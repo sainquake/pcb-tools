@@ -14,7 +14,7 @@ Copy paste `prepare-commit-msg` to `.git\hooks` folder.
 Update submodule:
 
 ```
-cd scripts/pcb-tools/
+cd scripts/pcb-tools/ &&
 git pull
 ```
 
