@@ -42,7 +42,19 @@ parameters = getParametersFromProjPCB(PROJECT)
 vp = parameters['vp']
 #PARSE netlist
 
+
+
+if not os.path.exists('./Project Outputs'):
+    exit()
+
+if not os.path.exists('./docs'):
+    exit()
+
+
+
 def parseNetlist():
+    
+    #if not os.path.isfile(path)
     net = os.listdir('./Project Outputs/WireListNetlist/')[0]
 
     with open(f'./Project Outputs/WireListNetlist/{net}') as f:
