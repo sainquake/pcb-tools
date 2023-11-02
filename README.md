@@ -14,6 +14,7 @@ Copy paste `prepare-commit-msg` to `.git\hooks` folder.
 Update submodule:
 
 ```
-git submodule update --init --recursive
+cd scripts/pcb-tools/
+git pull
 ```
 
