@@ -44,12 +44,15 @@ vp = parameters['vp']
 
 
 
-if not os.path.exists('./Project Outputs'):
+if not os.path.exists('./Project Outputs/'):
+    print('Project Outputs not existed')
     exit()
+    
 
-if not os.path.exists('./docs'):
+if not os.path.exists('./doc/'):
+    print('docs not existed')
     exit()
-
+    
 
 
 def parseNetlist():
