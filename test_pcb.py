@@ -226,7 +226,7 @@ def test_bom_has_needed_keys():
     keys = (bom[0].keys())
     for item in needed_keys:
         print(item)
-        assert (item in keys)
+        assert (item.replace('\n','').strip() in keys)
 
 def extract_version_from_bom():
     bom = generate_BOM()
