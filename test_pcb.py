@@ -224,11 +224,13 @@ def test_bom_has_needed_keys():
     bom = generate_BOM()
 
     keys = (bom[0].keys())
+    keys_ = []
     for item in keys:
-        item = item.replace('\n','').strip()
+        keys_.append(item.replace('\n','').strip())
+
     for item in needed_keys:
         print(item)
-        assert (item.replace('\n','').strip() in keys)
+        assert (item.replace('\n','').strip() in keys_)
 
 def extract_version_from_bom():
     bom = generate_BOM()
