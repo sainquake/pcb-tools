@@ -219,7 +219,7 @@ def generate_BOM():
 
 
 def test_bom_has_needed_keys():
-    needed_keys = ['Designator','Quantity','MF','MP','Description','Value','Package','Type','Instructions']
+    needed_keys = ['Designator','Quantity','MF','MP','Description','Value','Package','Type','Instructions','HelpURL']
 
     bom = generate_BOM()
 
