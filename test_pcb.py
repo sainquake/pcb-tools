@@ -224,6 +224,8 @@ def test_bom_has_needed_keys():
     bom = generate_BOM()
 
     keys = (bom[0].keys())
+    for item in keys:
+        item = item.replace('\n','').strip()
     for item in needed_keys:
         print(item)
         assert (item.replace('\n','').strip() in keys)
