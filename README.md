@@ -30,4 +30,9 @@ cd scripts/pcb-versions/ &&
 git pull
 ```
 
+# TEST 
 
+There is a list of all tests that should be passed to be sure that the board is compleat adt ready to production.
+
+- Files existence:
+    - 
