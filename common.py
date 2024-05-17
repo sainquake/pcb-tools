@@ -28,6 +28,58 @@ def getBOM():
 
     return data
 
+def generatBOMToPCBWay(save_to = './Project Outputs/BOM/output.xlsx'):
+    import openpyxl
+    import pandas as pd
+    data = getBOM()
+    columns = ['*Designator', '*Qty', 'Manufacturer', '*Mfg Part #', 'Value / Description', '*Package/Footprint',
+            'Mounting Type', 'Your Instructions / Notes', 'Assembly', '*Unit Price(XX sets)', '*Total', '*Delivery Time',
+            '*Actual Purchase Mfg Part #', '*PCBWay Note', 'Customer Reply', 'PCBWay Update']
+    dataxls = pd.DataFrame(columns=columns)
+    dataxls['*Designator'] = data['Designator']
+    dataxls['*Qty'] = data['Quantity']
+    dataxls['Manufacturer'] = data['MF']
+    dataxls['*Mfg Part #'] = data['MP']
+    dataxls['Value / Description'] = data['Value'].astype('str') + '; ' + data['Description'].astype('str')
+    dataxls['*Package/Footprint'] = data['Package']
+    dataxls['Mounting Type'] = data['Type']
+    dataxls['Your Instructions / Notes'] = data['Instructions'] + '; ' + data['HelpURL']
+    dataxls.to_excel(save_to)
+
+    book = openpyxl.load_workbook(save_to)
+    sheet = book['Sheet1']
+    for col in sheet.columns: # автоматическая ширина ячеек
+        max_length = 0
+        column = col[0].column_letter # Get the column name
+        for cell in col:
+            try: # Necessary to avoid error on empty cells
+                if len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = max_length * 0.8
+        sheet.column_dimensions[column].width = adjusted_width if adjusted_width<50 else 50
+    yellow = openpyxl.styles.PatternFill('solid', fgColor="FFFF00")
+    grey = openpyxl.styles.PatternFill('solid', fgColor="C0C0C0")
+    for row in sheet.iter_rows(min_row=1, min_col=1, max_row=1, max_col=sheet.max_column):
+        for cell in row:
+            cell.fill = grey
+    sheet['B1'].fill = yellow
+    sheet['C1'].fill = yellow
+    sheet['E1'].fill = yellow
+    sheet['G1'].fill = yellow
+    sheet['K1'].fill = yellow
+    sheet['L1'].fill = yellow
+    sheet['M1'].fill = yellow
+    sheet['N1'].fill = yellow
+    sheet['O1'].fill = yellow
+    sheet['P1'].fill = yellow
+    sheet['Q1'].fill = yellow
+    book.save(save_to)
+    return data
+
+
+
 def parseNetlist():
     import os
     #if not os.path.isfile(path)
@@ -149,3 +201,42 @@ def layerStackParce():
     re['list'] = listlayers
     re['stndart height'] = standrdvalue
     return re
+
+def minTrace(file_name = 'PCB.GTL'):
+    from gerber import load_layer
+    with open(f'./Project Outputs/Gerber/{file_name}') as f:
+        lines = f.readlines()
+    for i in range(lines.__len__()):
+        lines[i] = lines[i].strip('*\n')
+    listfromPCBG1 = []
+    for i in lines:
+        if i.find('%') == False: #TODO поиск строк по % во всём файле вообще корректен?
+            i = i.strip('*%')
+            if i.find('C') != -1 and i.find(',') != -1:
+                listfromPCBG1.append(float(i[i.find(',')+1:]))
+
+    return min(listfromPCBG1)
+
+def minFromNCDrill(file_name = './Project Outputs/NC Drill/PCB.TXT'):
+    with open(file_name) as f:
+        lines = f.readlines()
+    for i in range(lines.__len__()):
+        lines[i] = lines[i].strip()
+    pcbplate = lines[lines.index(';TYPE=PLATED')+1:lines.index('%')] #TODO в цикл его надо пихать шобы по всему файлу пройтись?
+    tmp = []
+    for i in pcbplate:
+        if 'F00S00C' in i:
+            tmp.append(float(i[i.index('C')+1:]))
+    return min(tmp)
+
+def minFromAllNCDrill():
+    import os
+    drill_files = []
+    for path in os.listdir('./Project Outputs/NC Drill/'):
+        if '.TXT'.lower() in path.lower():
+            drill_files.append('./Project Outputs/NC Drill/'+path)
+            #shutil.copyfile('./Project Outputs/NC Drill/'+path, './PCBWay-output/'+path)
+
+    mindrill = 50
+    for item in drill_files:
+        mindrill = min( minFromNCDrill(item),mindrill)
